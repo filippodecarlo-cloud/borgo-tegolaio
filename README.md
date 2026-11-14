@@ -51,3 +51,23 @@ conviene far rigenerare le due pagine, e aggiornare titolo e descrizione per Goo
 
 In *Settings → Pages → Custom domain* puoi collegare un dominio tuo. In quel caso vanno aggiornati
 gli indirizzi nelle due pagine e in `sitemap.xml`.
+
+## Calendario delle disponibilità (sincronizzato con Airbnb)
+
+Nella sezione Contatti c'è un calendario con i giorni liberi e occupati. Si aggiorna da solo
+ogni 3 ore leggendo il calendario Airbnb: un'automazione di GitHub (`.github/workflows/calendario.yml`)
+scarica il calendario e salva in `disponibilita.json` **solo le date occupate**, senza dati degli ospiti.
+
+**Da fare una volta sola**
+1. Su Airbnb (account che gestisce l'annuncio): Calendario → Disponibilità → Collega calendari →
+   **Esporta calendario** → copia il link (finisce con `.ics`).
+2. Su GitHub, nella repo: **Settings → Secrets and variables → Actions → New repository secret**.
+   Name: `AIRBNB_ICAL_URL` · Secret: incolla il link → **Add secret**.
+3. Scheda **Actions** → "Aggiorna calendario" → **Run workflow** per il primo aggiornamento.
+
+Note
+- Il link Airbnb è come una password: non va mai scritto nei file del sito, solo nel segreto.
+- Se il calendario non viene aggiornato per più di 7 giorni (es. link cambiato) il sito lo nasconde
+  da solo, per non mostrare date sbagliate. GitHub ti avvisa via email se l'aggiornamento fallisce.
+- Per nascondere il calendario: in `contenuti.js` metti `mostraCalendario: false`.
+- Le prenotazioni dirette vanno bloccate a mano anche su Airbnb (d'accordo con la host).

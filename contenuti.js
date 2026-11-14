@@ -20,6 +20,9 @@ const SITO = {
 
 
   /* ---------- DATI GENERALI ---------- */
+  // Calendario delle disponibilità nella sezione Contatti, aggiornato in automatico
+  // dal calendario Airbnb (vedi README). Metti false per nasconderlo.
+  mostraCalendario: true,
   nomeSito: "Borgo Tegolaio 4",
   // Logo accanto al nome e icona della scheda del browser ("" per toglierlo)
   logo: "foto/logo.png",

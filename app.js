@@ -15,7 +15,10 @@ const UI = {
     avviso:"Contatti non ancora configurati: inserisci WhatsApp o email nel file contenuti.js.",
     cinEtichetta:"CIN",minuti:"min",ospitiMax:"Fino a 4 ospiti",recensioni:"recensioni",
     msgIntro:"Buongiorno, vorrei informazioni sull'appartamento in",msgOggetto:"Richiesta disponibilità",
-    mNome:"Nome",mArrivo:"Arrivo",mPartenza:"Partenza",mOspiti:"Ospiti",altraLingua:"EN"},
+    mNome:"Nome",mArrivo:"Arrivo",mPartenza:"Partenza",mOspiti:"Ospiti",altraLingua:"EN",
+    titCal:"Disponibilità",calLibero:"Libero",calOccupato:"Occupato",calAgg:"Aggiornato il",calMesePrec:"Mese precedente",calMeseSucc:"Mese successivo",
+    avvisoDate:"Alcune delle date scelte risultano già occupate. Puoi comunque scriverci: ti proponiamo le date libere più vicine.",
+    giorni:["L","M","M","G","V","S","D"]},
   en:{navCasa:"The apartment",navFoto:"Photos",navDove:"Location",navInfo:"Info",navContatti:"Contact",navLunghi:"1–12 months",occLunghi:"Mid-term stays",ctaLunghi:"Ask for the monthly rate",fTipo:"Type of stay",tipoBreve:"Holiday or short stay",tipoLungo:"Mid-term stay (1–12 months)",mTipo:"Stay",ancheMesi:"Also for 1–12 months",
     luogo:"Florence · Oltrarno",cta:"Check availability",
     occCasa:"The home",titCasa:"Live Florence like a local",
@@ -31,7 +34,10 @@ const UI = {
     avviso:"Contact details not configured yet: add WhatsApp or email in contenuti.js.",
     cinEtichetta:"CIN (national ID code)",minuti:"min",ospitiMax:"Up to 4 guests",recensioni:"reviews",
     msgIntro:"Hello, I'd like some information about the apartment at",msgOggetto:"Availability request",
-    mNome:"Name",mArrivo:"Arrival",mPartenza:"Departure",mOspiti:"Guests",altraLingua:"IT"}
+    mNome:"Name",mArrivo:"Arrival",mPartenza:"Departure",mOspiti:"Guests",altraLingua:"IT",
+    titCal:"Availability",calLibero:"Available",calOccupato:"Booked",calAgg:"Updated",calMesePrec:"Previous month",calMeseSucc:"Next month",
+    avvisoDate:"Some of the selected dates are already booked. Feel free to write to us anyway: we'll suggest the nearest available dates.",
+    giorni:["M","T","W","T","F","S","S"]}
 };
 
 const $ = id => document.getElementById(id);
@@ -125,5 +131,67 @@ modulo.onsubmit = e => {
   if (via === "wa") window.open("https://wa.me/" + c.whatsapp + "?text=" + encodeURIComponent(testo), "_blank");
   else window.location.href = "mailto:" + c.email + "?subject=" + encodeURIComponent(t.msgOggetto + " – " + SITO.nomeSito) + "&body=" + encodeURIComponent(testo);
 };
+
+/* calendario delle disponibilità: legge disponibilita.json, aggiornato in automatico dal calendario Airbnb */
+const ymd = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+let occupato = [], meseIniziale = 0;
+const notteOccupata = g => occupato.some(([a, b]) => g >= a && g < b);
+function controllaDate() {
+  const a = modulo.arrivo.value, p = modulo.partenza.value;
+  let conflitto = false;
+  if (a && occupato.length) {
+    const fine = p && p > a ? p : ymd(new Date(+a.slice(0, 4), +a.slice(5, 7) - 1, +a.slice(8) + 1));
+    conflitto = occupato.some(([x, y]) => x < fine && y > a);
+  }
+  $("avvisoDate").hidden = !conflitto;
+}
+function disegnaCalendario() {
+  const t = UI[lingua], quanti = window.innerWidth >= 700 ? 2 : 1, ora = new Date(), oggiL = ymd(ora);
+  const a = modulo.arrivo.value, p = modulo.partenza.value;
+  const nomeMese = new Intl.DateTimeFormat(lingua === "it" ? "it-IT" : "en-GB", { month: "long", year: "numeric" });
+  $("calMesi").classList.toggle("due", quanti === 2);
+  $("calMesi").replaceChildren(...Array.from({ length: quanti }, (_, k) => {
+    const primo = new Date(ora.getFullYear(), ora.getMonth() + meseIniziale + k, 1);
+    const box = el("div"); box.className = "cal-mese"; box.append(el("b", nomeMese.format(primo)));
+    const g = el("div"); g.className = "cal-griglia"; g.append(...t.giorni.map(x => el("span", x)));
+    for (let i = 0; i < (primo.getDay() + 6) % 7; i++) g.append(el("i"));
+    const ultimo = new Date(primo.getFullYear(), primo.getMonth() + 1, 0).getDate();
+    for (let d = 1; d <= ultimo; d++) {
+      const gg = ymd(new Date(primo.getFullYear(), primo.getMonth(), d)), b = el("button", d); b.type = "button";
+      const pass = gg < oggiL, occ = notteOccupata(gg), puoUscire = occ && a && !p && gg > a && !occupato.some(([x, y]) => x < gg && y > a);
+      if (pass) { b.className = "pass"; b.disabled = true; }
+      else if (occ) { b.className = "occ" + (puoUscire ? " uscita" : ""); b.title = t.calOccupato; if (!puoUscire) b.disabled = true; }
+      if (gg === oggiL) b.classList.add("oggi");
+      if (gg === a || gg === p) b.classList.add("sel"); else if (a && p && gg > a && gg < p) b.classList.add("tra");
+      if (!b.disabled) b.onclick = () => scegliGiorno(gg);
+      g.append(b);
+    }
+    box.append(g); return box;
+  }));
+  $("calPrec").disabled = meseIniziale <= 0; $("calSucc").disabled = meseIniziale >= 12 - quanti + 1;
+}
+function scegliGiorno(gg) {
+  const a = modulo.arrivo.value, p = modulo.partenza.value;
+  if (!a || p || gg <= a) { modulo.arrivo.value = gg; modulo.partenza.value = ""; modulo.partenza.min = gg; }
+  else modulo.partenza.value = gg;
+  controllaDate(); disegnaCalendario();
+}
+$("calPrec").onclick = () => { meseIniziale--; disegnaCalendario(); };
+$("calSucc").onclick = () => { meseIniziale++; disegnaCalendario(); };
+$("calPrec").setAttribute("aria-label", UI[lingua].calMesePrec); $("calSucc").setAttribute("aria-label", UI[lingua].calMeseSucc);
+modulo.arrivo.addEventListener("change", () => { controllaDate(); if (occupato.length) disegnaCalendario(); });
+modulo.partenza.addEventListener("change", () => { controllaDate(); if (occupato.length) disegnaCalendario(); });
+if (SITO.mostraCalendario !== false) {
+  fetch(percorso("disponibilita.json?t=" + Date.now()), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || !j.aggiornato || !Array.isArray(j.occupato)) return;
+    const eta = (Date.now() - new Date(j.aggiornato + "T12:00:00")) / 864e5;
+    if (eta > 7) return;   /* dati vecchi di oltre una settimana: meglio non mostrarli */
+    occupato = j.occupato;
+    $("calAgg").textContent = "· " + UI[lingua].calAgg + " " + j.aggiornato.split("-").reverse().join("/");
+    $("calendario").hidden = false; disegnaCalendario(); controllaDate();
+    let largo = window.innerWidth >= 700;
+    window.addEventListener("resize", () => { const l = window.innerWidth >= 700; if (l !== largo) { largo = l; meseIniziale = Math.min(meseIniziale, 11); disegnaCalendario(); } });
+  }).catch(() => {});
+}
 
 disegna();

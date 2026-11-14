@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="stile.css">
+<link rel="stylesheet" href="stile.css?v=6">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": ["LodgingBusiness", "Apartment"], "name": "Borgo Tegolaio 4 – Apartment in Santo Spirito, Florence", "description": "Renovated apartment for 4 in Florence's Oltrarno, steps from Piazza Santo Spirito and Palazzo Pitti. Holiday stays and 1–12 month rentals, direct from the owner.", "url": "https://filippodecarlo-cloud.github.io/borgo-tegolaio/", "image": ["https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/01-camera.jpg", "https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/02-soggiorno.jpg", "https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/03-cucina-e-pranzo.jpg", "https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/09-bagno.jpg"], "address": {"@type": "PostalAddress", "streetAddress": "Borgo Tegolaio 4", "postalCode": "50125", "addressLocality": "Firenze", "addressRegion": "FI", "addressCountry": "IT"}, "numberOfRooms": 2, "numberOfBedrooms": 1, "numberOfBathroomsTotal": 1, "occupancy": {"@type": "QuantitativeValue", "maxValue": 4}, "floorLevel": "1", "petsAllowed": false, "smokingAllowed": false, "checkinTime": "15:00", "checkoutTime": "10:00", "amenityFeature": [{"@type": "LocationFeatureSpecification", "name": "Free Wi-Fi", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Air conditioning", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Heating", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Kitchen with induction hob and microwave", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Washing machine", "value": true}, {"@type": "LocationFeatureSpecification", "name": "TV", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Coffee machine", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Hair dryer", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Linen and toiletries", "value": true}], "availableLanguage": ["en", "it"]}</script>
 </head>
 <body>
@@ -129,6 +129,14 @@
       <p class="occhiello" data-t="occContatti">Contact</p>
       <h2 data-t="titContatti">Ask for availability and price</h2>
       <p class="intro" data-t="introContatti">Tell us your dates and how many you are: we reply personally with availability and price, no obligation.</p>
+      <div class="calendario" id="calendario" hidden="">
+        <div class="cal-testa">
+          <h3 data-t="titCal">Availability</h3>
+          <div class="cal-nav"><button type="button" id="calPrec" aria-label="Previous month">‹</button><button type="button" id="calSucc" aria-label="Next month">›</button></div>
+        </div>
+        <div class="cal-mesi" id="calMesi"></div>
+        <p class="cal-nota"><span><i class="leg"></i><span data-t="calLibero">Available</span></span><span><i class="leg o"></i><span data-t="calOccupato">Booked</span></span><span id="calAgg"></span></p>
+      </div>
       <form id="modulo">
         <label><span data-t="fNome">Name</span><input name="nome" required="" autocomplete="name"></label>
         <label><span data-t="fTipo">Type of stay</span><select name="tipo" id="tipo"><option value="breve">Holiday or short stay</option><option value="lungo">Mid-term stay (1–12 months)</option></select></label>
@@ -138,6 +146,7 @@
           <label><span data-t="fOspiti">Guests</span>
             <select name="ospiti"><option>1</option><option selected="">2</option><option>3</option><option>4</option></select></label>
         </div>
+        <p class="avviso" id="avvisoDate" hidden="" data-t="avvisoDate">Some of the selected dates are already booked. Feel free to write to us anyway: we'll suggest the nearest available dates.</p>
         <label><span data-t="fMessaggio">Message (optional)</span><textarea name="messaggio"></textarea></label>
         <div class="azioni">
           <button class="bottone verde" type="submit" value="wa" id="btnWa" data-t="inviaWa">Message on WhatsApp</button>
@@ -164,8 +173,8 @@
 </div>
 
 <script>window.BASE="";</script>
-<script src="contenuti.js"></script>
-<script src="app.js"></script>
+<script src="contenuti.js?v=6"></script>
+<script src="app.js?v=6"></script>
 
 
 </body></html>
