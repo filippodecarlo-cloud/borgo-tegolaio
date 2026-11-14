@@ -9,12 +9,15 @@ const SITO = {
   /* ---------- CONTATTI (da compilare!) ---------- */
   contatti: {
     nome: "Filippo",
-    // Numero WhatsApp in formato internazionale, solo cifre, senza + né spazi.
-    // Esempio: "393331234567". Lascia "" per nascondere il pulsante WhatsApp.
-    whatsapp: "",
-    // Email a cui arrivano le richieste. Lascia "" per nascondere il pulsante email.
-    email: ""
+    // WhatsApp ed email sono salvati in forma codificata (base64) e ricostruiti solo
+    // quando il visitatore preme il pulsante: così non compaiono in chiaro nel sito
+    // e i programmi che raccolgono indirizzi per lo spam non li trovano.
+    // Per cambiarli chiedimelo, oppure scrivi il nuovo valore codificato dentro atob("...").
+    // Lascia "" per nascondere il relativo pulsante.
+    get whatsapp() { return atob("MzkzNDc3ODQ3MDU5"); },
+    get email() { return atob("ZmlsaXBwb2RlY2FybG9AZ21haWwuY29t"); }
   },
+
 
   /* ---------- DATI GENERALI ---------- */
   nomeSito: "Borgo Tegolaio 4",
