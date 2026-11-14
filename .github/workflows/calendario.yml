@@ -1,1 +1,33 @@
+# Ogni 3 ore legge il calendario Airbnb e aggiorna disponibilita.json (solo le date occupate).
+# Il link del calendario va messo in Settings → Secrets and variables → Actions,
+# con il nome AIRBNB_ICAL_URL. Per lanciarlo subito: scheda Actions → "Aggiorna calendario" → Run workflow.
+name: Aggiorna calendario
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency: calendario
+jobs:
+  aggiorna:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Legge il calendario Airbnb
+        env:
+          AIRBNB_ICAL_URL: ${{ secrets.AIRBNB_ICAL_URL }}
+        run: python3 strumenti/calendario.py
+      - name: Pubblica le date se sono cambiate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain -- disponibilita.json)" ]; then echo "Nessuna novità"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add disponibilita.json
+          git commit -m "Aggiorna disponibilità dal calendario Airbnb"
+          git push
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
 
