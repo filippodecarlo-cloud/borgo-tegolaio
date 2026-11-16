@@ -23,6 +23,9 @@ const SITO = {
   // Calendario delle disponibilità nella sezione Contatti, aggiornato in automatico
   // dal calendario Airbnb (vedi README). Metti false per nasconderlo.
   mostraCalendario: true,
+  // Contatore delle visite (GoatCounter): scrivi tra le virgolette il nome scelto
+  // quando ti registri su goatcounter.com (es. "borgotegolaio"). Vuoto = nessun contatore.
+  contatoreVisite: "",
   nomeSito: "Borgo Tegolaio 4",
   // Logo accanto al nome e icona della scheda del browser ("" per toglierlo)
   logo: "foto/logo.png",

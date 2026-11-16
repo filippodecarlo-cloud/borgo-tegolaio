@@ -55,7 +55,7 @@ gli indirizzi nelle due pagine e in `sitemap.xml`.
 ## Calendario delle disponibilità (sincronizzato con Airbnb)
 
 Nella sezione Contatti c'è un calendario con i giorni liberi e occupati. Si aggiorna da solo
-ogni 3 ore leggendo il calendario Airbnb: un'automazione di GitHub (`.github/workflows/calendario.yml`)
+ogni 3 ore leggendo il calendario Airbnb: un'automazione di GitHub (`.github/workflows/calendario.yml` + `strumenti/calendario.py`)
 scarica il calendario e salva in `disponibilita.json` **solo le date occupate**, senza dati degli ospiti.
 
 **Da fare una volta sola**

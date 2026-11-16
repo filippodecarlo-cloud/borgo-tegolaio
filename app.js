@@ -16,7 +16,7 @@ const UI = {
     cinEtichetta:"CIN",minuti:"min",ospitiMax:"Fino a 4 ospiti",recensioni:"recensioni",
     msgIntro:"Buongiorno, vorrei informazioni sull'appartamento in",msgOggetto:"Richiesta disponibilità",
     mNome:"Nome",mArrivo:"Arrivo",mPartenza:"Partenza",mOspiti:"Ospiti",altraLingua:"EN",
-    titCal:"Disponibilità",calLibero:"Libero",calOccupato:"Occupato",calAgg:"Aggiornato il",calMesePrec:"Mese precedente",calMeseSucc:"Mese successivo",
+    portone:"Apriamo il portone",titCal:"Disponibilità",calLibero:"Libero",calOccupato:"Occupato",calAgg:"Aggiornato il",calMesePrec:"Mese precedente",calMeseSucc:"Mese successivo",
     avvisoDate:"Alcune delle date scelte risultano già occupate. Puoi comunque scriverci: ti proponiamo le date libere più vicine.",
     giorni:["L","M","M","G","V","S","D"]},
   en:{navCasa:"The apartment",navFoto:"Photos",navDove:"Location",navInfo:"Info",navContatti:"Contact",navLunghi:"1–12 months",occLunghi:"Mid-term stays",ctaLunghi:"Ask for the monthly rate",fTipo:"Type of stay",tipoBreve:"Holiday or short stay",tipoLungo:"Mid-term stay (1–12 months)",mTipo:"Stay",ancheMesi:"Also for 1–12 months",
@@ -35,7 +35,7 @@ const UI = {
     cinEtichetta:"CIN (national ID code)",minuti:"min",ospitiMax:"Up to 4 guests",recensioni:"reviews",
     msgIntro:"Hello, I'd like some information about the apartment at",msgOggetto:"Availability request",
     mNome:"Name",mArrivo:"Arrival",mPartenza:"Departure",mOspiti:"Guests",altraLingua:"IT",
-    titCal:"Availability",calLibero:"Available",calOccupato:"Booked",calAgg:"Updated",calMesePrec:"Previous month",calMeseSucc:"Next month",
+    portone:"Opening the door",titCal:"Availability",calLibero:"Available",calOccupato:"Booked",calAgg:"Updated",calMesePrec:"Previous month",calMeseSucc:"Next month",
     avvisoDate:"Some of the selected dates are already booked. Feel free to write to us anyway: we'll suggest the nearest available dates.",
     giorni:["M","T","W","T","F","S","S"]}
 };
@@ -74,7 +74,8 @@ function disegna() {
   $("descrizione").replaceChildren(...SITO.descrizione[lingua].map(p => el("p", p)));
   $("numeri").replaceChildren(...SITO.numeri.map(n => { const b = el("div"); b.append(el("b", n.valore), el("span", n[lingua])); return b; }));
   riempi("servizi-lista", SITO.servizi.map(s => s[lingua]));
-  $("distanze").replaceChildren(...SITO.distanze.map(x => { const li = el("li"); li.append(el("span", x[lingua]), el("b", x.min + " " + t.minuti)); return li; }));
+  const piuLontano = Math.max(...SITO.distanze.map(x => parseFloat(x.min) || 0)) || 1;
+  $("distanze").replaceChildren(...SITO.distanze.map(x => { const li = el("li"); li.append(el("span", x[lingua]), el("b", x.min + " " + t.minuti)); li.style.setProperty("--q", ((parseFloat(x.min) || 0) / piuLontano).toFixed(3)); return li; }));
   riempi("orari", SITO.orari[lingua]);
   riempi("regole", SITO.regole[lingua]);
 
@@ -87,7 +88,7 @@ function disegna() {
 }
 
 /* parti che non cambiano con la lingua */
-$("copertina").style.backgroundImage = 'url("' + percorso(SITO.foto[0].file) + '")';
+$("copFoto").style.backgroundImage = 'url("' + percorso(SITO.foto[0].file) + '")';
 $("mappa").src = "https://www.google.com/maps?q=" + encodeURIComponent(SITO.indirizzo) + "&z=16&output=embed";
 $("indirizzo").textContent = SITO.indirizzo;
 $("pieNome").textContent = SITO.nomeSito;
@@ -195,3 +196,50 @@ if (SITO.mostraCalendario !== false) {
 }
 
 disegna();
+
+/* contatore delle visite (GoatCounter): si attiva scrivendo il codice in contenuti.js → contatoreVisite */
+if (SITO.contatoreVisite && !navigator.webdriver && !/^(localhost|127\.|$)/.test(location.hostname)) {
+  const g = el("script"); g.async = true; g.src = "https://gc.zgo.at/count.js";
+  g.dataset.goatcounter = "https://" + SITO.contatoreVisite + ".goatcounter.com/count"; document.body.append(g);
+}
+
+/* barra di avanzamento, pulsante fisso su telefono, foto di copertina che si muove con lo scorrimento */
+const ANIMA = document.documentElement.classList.contains("anima");
+const alloScorrere = () => {
+  const y = window.scrollY, vh = window.innerHeight, tot = document.documentElement.scrollHeight - vh;
+  $("avanzamento").style.transform = "scaleX(" + (tot > 0 ? Math.min(1, y / tot) : 0) + ")";
+  $("ctaFissa").classList.toggle("su", y > vh * 0.7 && $("contatti").getBoundingClientRect().top > vh * 0.8);
+  if (ANIMA && y < vh * 1.1) $("copFoto").style.translate = "0 " + (y * 0.22).toFixed(1) + "px";
+};
+window.addEventListener("scroll", alloScorrere, { passive: true }); alloScorrere();
+
+/* animazioni: attive solo se il visitatore non ha chiesto di ridurre i movimenti (vedi <head>) */
+if (ANIMA) {
+  /* titolo che sale parola per parola */
+  const tit = $("titolo"), parole = tit.textContent.trim().split(/\s+/);
+  tit.replaceChildren(...parole.flatMap((p, i) => { const m = el("span"); m.className = "par"; const s = el("span", p); s.style.transitionDelay = (0.25 + i * 0.08) + "s"; m.append(s); return [m, " "]; }));
+
+  /* portone: conta fino a 100 mentre arriva la foto di copertina, poi si apre */
+  let n = 0, pronto = false;
+  const foto = new Image(); foto.onload = foto.onerror = () => { pronto = true; }; foto.src = percorso(SITO.foto[0].file);
+  setTimeout(() => { pronto = true; }, 3000);
+  const conta = () => {
+    n = Math.min(100, n + (pronto ? 3 : n < 80 ? 1 : 0.08)); $("portonePerc").textContent = Math.floor(n);
+    if (n < 100) requestAnimationFrame(conta);
+    else { document.documentElement.classList.add("aperto"); setTimeout(() => { const p = $("portone"); if (p) p.remove(); }, 1500); }
+  };
+  requestAnimationFrame(conta);
+
+  /* nastro con i luoghi raggiungibili a piedi */
+  const voci = () => SITO.distanze.map(x => { const s = el("span"); s.append(el("i", x[lingua]), el("b", x.min + " " + UI[lingua].minuti)); return s; });
+  const pista = el("div"); pista.className = "pista"; pista.append(...voci(), ...voci(), ...voci(), ...voci());
+  $("nastro").append(pista); $("nastro").hidden = false;
+
+  /* comparsa degli elementi quando entrano nello schermo */
+  const oss = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visto"); oss.unobserve(e.target); } }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+  document.querySelectorAll("main h2, .galleria button, #lunghiFoto, .distanze").forEach((x, i) => {
+    if (x.matches(".galleria button")) x.style.transitionDelay = (i % 4 * 0.09) + "s";
+    if (x.matches("h2")) { const r = el("span"); r.className = "riga"; r.append(...x.childNodes); x.append(r); }
+    x.classList.add("riv"); oss.observe(x);
+  });
+}

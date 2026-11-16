@@ -24,14 +24,15 @@
 <meta name="geo.placename" content="Firenze">
 <link rel="icon" href="../foto/logo.png">
 <link rel="preload" as="image" href="../foto/01-camera.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../stile.css?v=6">
+<link rel="preload" as="font" type="font/woff2" href="../fonts/fraunces.woff2" crossorigin="">
+<script>if(!navigator.webdriver&&!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.className="anima"</script>
+<link rel="stylesheet" href="../stile.css?v=7">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": ["LodgingBusiness", "Apartment"], "name": "Borgo Tegolaio 4 – Appartamento a Santo Spirito, Firenze", "description": "Appartamento ristrutturato per 4 persone in Oltrarno, a due passi da Piazza Santo Spirito e Palazzo Pitti. Soggiorni brevi e affitti da 1 a 12 mesi, direttamente dal proprietario.", "url": "https://filippodecarlo-cloud.github.io/borgo-tegolaio/it/", "image": ["https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/01-camera.jpg", "https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/02-soggiorno.jpg", "https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/03-cucina-e-pranzo.jpg", "https://filippodecarlo-cloud.github.io/borgo-tegolaio/foto/09-bagno.jpg"], "address": {"@type": "PostalAddress", "streetAddress": "Borgo Tegolaio 4", "postalCode": "50125", "addressLocality": "Firenze", "addressRegion": "FI", "addressCountry": "IT"}, "numberOfRooms": 2, "numberOfBedrooms": 1, "numberOfBathroomsTotal": 1, "occupancy": {"@type": "QuantitativeValue", "maxValue": 4}, "floorLevel": "1", "petsAllowed": false, "smokingAllowed": false, "checkinTime": "15:00", "checkoutTime": "10:00", "amenityFeature": [{"@type": "LocationFeatureSpecification", "name": "Wi-Fi gratuito", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Aria condizionata", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Riscaldamento", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Cucina con piano a induzione e microonde", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Lavatrice", "value": true}, {"@type": "LocationFeatureSpecification", "name": "TV", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Macchina per il caffè", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Asciugacapelli", "value": true}, {"@type": "LocationFeatureSpecification", "name": "Biancheria e set di cortesia", "value": true}], "availableLanguage": ["en", "it"]}</script>
 </head>
 <body>
 
+<div class="portone" id="portone" aria-hidden="true"><div class="anta sx"><i></i></div><div class="anta dx"><i></i></div><p class="portone-testo"><span data-t="portone">Apriamo il portone</span><b id="portonePerc">0</b></p></div>
+<div class="avanzamento" id="avanzamento" style="transform: scaleX(0);"></div>
 <header class="barra" id="barra">
   <a class="marchio" href="#top" id="marchio"><img src="../foto/logo.png" alt="">Borgo Tegolaio 4</a>
   <nav>
@@ -46,7 +47,8 @@
 </header>
 
 <main id="top">
-  <div class="copertina" id="copertina" style="background-image: url(&quot;../foto/01-camera.jpg&quot;);">
+  <div class="copertina" id="copertina">
+    <div class="cop-foto" id="copFoto" style="background-image: url(&quot;../foto/01-camera.jpg&quot;);"></div>
     <div class="contenitore">
       <h1><span class="occhiello" data-t="luogo">Firenze · Oltrarno</span><span id="titolo">Accogliente appartamento a Santo Spirito</span></h1>
       <p class="sotto" id="sottotitolo">Nel cuore dell'Oltrarno, tra Piazza Santo Spirito e Palazzo Pitti</p>
@@ -54,6 +56,8 @@
       <a class="bottone" href="#contatti" data-t="cta">Chiedi disponibilità</a>
     </div>
   </div>
+
+  <div class="nastro" id="nastro" hidden="" aria-hidden="true"></div>
 
   <section id="appartamento">
     <div class="contenitore due">
@@ -104,7 +108,7 @@
         <p class="occhiello" data-t="occDove">Posizione</p>
         <h2 data-t="titDove">Tutto a piedi</h2>
         <p data-t="testoDove">Dal portone si raggiungono a piedi tutti i luoghi simbolo della città.</p>
-        <ul class="distanze" id="distanze"><li><span>Palazzo Pitti e Giardino di Boboli</span><b>1 min</b></li><li><span>Ponte Vecchio</span><b>5 min</b></li><li><span>Galleria degli Uffizi</span><b>6 min</b></li><li><span>Palazzo Vecchio</span><b>7 min</b></li><li><span>Santa Croce</span><b>10 min</b></li><li><span>Duomo</span><b>12 min</b></li><li><span>Galleria dell'Accademia</span><b>15–20 min</b></li></ul>
+        <ul class="distanze" id="distanze"><li style="--q: 0.067;"><span>Palazzo Pitti e Giardino di Boboli</span><b>1 min</b></li><li style="--q: 0.333;"><span>Ponte Vecchio</span><b>5 min</b></li><li style="--q: 0.400;"><span>Galleria degli Uffizi</span><b>6 min</b></li><li style="--q: 0.467;"><span>Palazzo Vecchio</span><b>7 min</b></li><li style="--q: 0.667;"><span>Santa Croce</span><b>10 min</b></li><li style="--q: 0.800;"><span>Duomo</span><b>12 min</b></li><li style="--q: 1.000;"><span>Galleria dell'Accademia</span><b>15–20 min</b></li></ul>
       </div>
       <div>
         <iframe class="mappa" id="mappa" loading="lazy" title="Mappa" src="https://www.google.com/maps?q=Borgo%20Tegolaio%204%2C%2050125%20Firenze&amp;z=16&amp;output=embed"></iframe>
@@ -141,8 +145,8 @@
         <label><span data-t="fNome">Nome</span><input name="nome" required="" autocomplete="name"></label>
         <label><span data-t="fTipo">Tipo di soggiorno</span><select name="tipo" id="tipo"><option value="breve">Vacanza o soggiorno breve</option><option value="lungo">Soggiorno lungo (1–12 mesi)</option></select></label>
         <div class="riga">
-          <label><span data-t="fArrivo">Arrivo</span><input type="date" name="arrivo" required="" min="2026-11-14"></label>
-          <label><span data-t="fPartenza">Partenza</span><input type="date" name="partenza" required="" min="2026-11-14"></label>
+          <label><span data-t="fArrivo">Arrivo</span><input type="date" name="arrivo" required="" min="2026-11-16"></label>
+          <label><span data-t="fPartenza">Partenza</span><input type="date" name="partenza" required="" min="2026-11-16"></label>
           <label><span data-t="fOspiti">Ospiti</span>
             <select name="ospiti"><option>1</option><option selected="">2</option><option>3</option><option>4</option></select></label>
         </div>
@@ -157,6 +161,7 @@
     </div>
   </section>
 </main>
+<a class="bottone cta-fissa" id="ctaFissa" href="#contatti" data-t="cta">Chiedi disponibilità</a>
 
 <footer>
   <div class="contenitore">
@@ -173,8 +178,8 @@
 </div>
 
 <script>window.BASE="../";</script>
-<script src="../contenuti.js?v=6"></script>
-<script src="../app.js?v=6"></script>
+<script src="../contenuti.js?v=7"></script>
+<script src="../app.js?v=7"></script>
 
 
 </body></html>
